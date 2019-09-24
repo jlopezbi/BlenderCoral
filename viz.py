@@ -5,6 +5,23 @@ import mathutils
 DEFAULT_BMESH_COLOR = (0.5, 0, 0.2)
 
 
+def add_sphere(pos, name="Sphere", diam=20, color=(0.5, 0.0, 0.5)):
+    pos = mathutils.Vector(pos)
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=20, v_segments=20, diameter=diam)
+    me = bpy.data.meshes.new("Mesh")
+    bm.to_mesh(me)
+
+    mat = bpy.data.materials.new(name="Mat")
+    mat.diffuse_color = color
+
+    obj = bpy.data.objects.new(name, me)
+    obj.data.materials.append(mat)
+    obj.location = pos
+    bpy.context.scene.objects.link(obj)
+
+    return obj
+
 def add_bmesh(bm, objname="Object", color=DEFAULT_BMESH_COLOR, alpha=0):
     me = bpy.data.meshes.new("mesh")
     bm.to_mesh(me)
