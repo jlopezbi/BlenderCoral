@@ -1,14 +1,18 @@
+import importlib
 import unittest
+
 import bmesh
 import Coral
 import viz
-import importlib
+
 importlib.reload(Coral)
+
 
 def ico_seed():
     bme = bmesh.new()
     bmesh.ops.create_icosphere(bme, subdivisions=5, diameter=10)
     return bme
+
 
 class blah(unittest.TestCase):
     def setUp(self):
@@ -16,10 +20,19 @@ class blah(unittest.TestCase):
         self.coral = Coral.Coral(bme=self.seed)
 
     def test(self):
+        '''get a visual that neighbors look right and no dup spheres
+        '''
         viz.add_bmesh(self.seed)
         vert = self.seed.verts[0]
-        viz.add_sphere(vert.co, str(0), diam=1)
-        self.coral.neighbor_levels(vert, levels=3)
+        # viz.add_sphere(vert.co, str(0), diam=1)
+        neighbors = self.coral.neighbor_levels(vert, levels=9)
 
-if __name__=="__main__":
+        diam = 1.0
+        for neighborhood in neighbors:
+            for vert in neighborhood:
+                viz.add_sphere(vert.co, diam=diam)
+            diam -= 0.1
+
+
+if __name__ == "__main__":
     unittest.main(exit=False)
