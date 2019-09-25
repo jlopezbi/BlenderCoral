@@ -20,18 +20,20 @@ class blah(unittest.TestCase):
         self.coral = Coral.Coral(bme=self.seed)
 
     def test(self):
-        '''get a visual that neighbors look right and no dup spheres
-        '''
+        """get a visual that neighbors look right and no dup spheres
+        """
         viz.add_bmesh(self.seed)
         vert = self.seed.verts[0]
         # viz.add_sphere(vert.co, str(0), diam=1)
-        neighbors = self.coral.neighbor_levels(vert, levels=9)
+        levels = 20
+        neighbors = self.coral.neighbor_levels(vert, levels=levels)
 
         diam = 1.0
+        step = (diam - 0.1) / levels
         for neighborhood in neighbors:
             for vert in neighborhood:
                 viz.add_sphere(vert.co, diam=diam)
-            diam -= 0.1
+            diam -= step
 
 
 if __name__ == "__main__":
