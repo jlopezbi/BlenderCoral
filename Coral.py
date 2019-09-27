@@ -33,6 +33,13 @@ class Coral(object):
         return neighbors
 
 
+def displace_vert(vert, length):
+    """moves vert along its normal by length
+    """
+    norm = vert.normal
+    vert.co = vert.co + norm * length
+
+
 # Polyp. neighbor_levels
 #       . grow > upon receive nutrients
 #       . ensure_space
