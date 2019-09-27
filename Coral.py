@@ -33,6 +33,24 @@ class Coral(object):
         return neighbors
 
 
+def even_sharing_among_levels(n_levels, total_grow_length, center_grow_length):
+    """distributes (total_grow_length - center_grow_length) among the neighborhoods evenly
+
+    n_levels is number of levels beyond the center-vert that get to grow
+
+    Args:
+        n_levels [int]: number of levels beyond center-vert that grow
+        total_grow_length [float]: total grow length of center vert and n_level neighbors
+        center_grow_length [float]: amount of grow length reserved for the center_vert
+    Returns:
+        list[float]: grow length per level, starting from 0th level (center_vert)
+    """
+    left_over = total_grow_length - center_grow_length
+    lengths = [left_over / n_levels] * n_levels
+    lengths.insert(0, center_grow_length)
+    return lengths
+
+
 def displace_vert(vert, length):
     """moves vert along its normal by length
     """

@@ -27,7 +27,7 @@ class DisplaceVertTestCase(unittest.TestCase):
             vert.normal_update()
 
     def test_displaces_one_vert(self):
-        viz.add_bmesh(self.cube, "before vert displace")
+        # viz.add_bmesh(self.cube, "before vert displace")
         # checked visually using bpy.app.debug=True (display mesh indices)
         # know that this should be in unitZ direction
         cube = self.cube.copy()
@@ -42,9 +42,7 @@ class DisplaceVertTestCase(unittest.TestCase):
     def test_sequential_displace_of_verts(self):
         """sequential displaces should not update the original vert normals
         """
-        viz.add_bmesh(self.cube, "before vert displace")
-        # checked visually using bpy.app.debug=True (display mesh indices)
-        # know that this should be in unitZ direction
+        # viz.add_bmesh(self.cube, "before vert displace")
         cube = self.cube.copy()
         cube.verts.ensure_lookup_table()
         vert = cube.verts[0]
@@ -60,7 +58,7 @@ class DisplaceVertTestCase(unittest.TestCase):
             vert.co, original_pos + (vu.UNIT_Z + vu.UNIT_X).normalized() * length
         )
 
-        viz.add_bmesh(cube, "after two verts displace")
+        # viz.add_bmesh(cube, "after two verts displace")
 
 
 class GetNeighborsTestCase(unittest.TestCase):
