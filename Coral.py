@@ -2,38 +2,48 @@ import bmesh
 import viz
 
 
-class Coral(object):
-    def __init__(self, bme):
-        # what if coral was a collection of
-        # polyps and edges?
-        self.bme = bme
-        self.bme.verts.ensure_lookup_table()
+def neighbor_levels(bme, vert, levels):
+    """outputs a list of lists of neighbors, ordered according to 'level' or
+    distance from the input vert
 
-    def neighbor_levels(self, vert, levels):
-        """outputs a list of lists of neighbors, ordered according to 'level' or
-        distance from the input vert
+    Args:
+        vert (bmesh.types.BMVert)
+        levels (int): number of levels to return
+    Returns:
+        list[list[bmesh.types.BMVert]]
+    """
+    curr_geom = set([vert])
+    neighbors = [[vert]]
+    for i in range(levels):
 
-        Args:
-            vert (bmesh.types.BMVert)
-            levels (int): number of levels to return
-        Returns:
-            list[list[bmesh.types.BMVert]]
-        """
-        curr_geom = set([vert])
-        neighbors = [[vert]]
-        for i in range(levels):
+        output = bmesh.ops.region_extend(bme, geom=list(curr_geom), use_faces=0, use_face_step=True)
+        verts = [ele for ele in output["geom"] if isinstance(ele, bmesh.types.BMVert)]
+        new_verts = set(verts) - curr_geom
+        curr_geom.update(verts)
 
-            output = bmesh.ops.region_extend(self.bme, geom=list(curr_geom), use_faces=0)
-            verts = [ele for ele in output["geom"] if isinstance(ele, bmesh.types.BMVert)]
-            new_verts = set(verts) - curr_geom
-            curr_geom.update(verts)
+        neighbors.append(list(new_verts))
 
-            neighbors.append(list(new_verts))
-
-        return neighbors
+    return neighbors
 
 
-def even_sharing_among_levels(n_levels, total_grow_length, center_grow_length):
+def grow_neighborhood(neighbors, grow_lengths):
+    """grows verts by amount according to grow_lengths. for a vert belonging to neighborhood 1, for
+    example, grows that vert by grow_lengths[1] / number_verts_in_neighborhood_1
+
+    Modifies positions of neighbors
+    Args:
+        neighbors (list[list[bmesh.types.BMVert]]): list of lists of neihbbor verts
+        grow_lengths (list[float]) total grow length per neighborhood
+    """
+
+    for total_grow_length, neighborhood in zip(grow_lengths, neighbors):
+        num_neighbors = len(neighborhood)
+        grow_length = total_grow_length / num_neighbors
+        for vert in neighborhood:
+            displace_vert(vert, grow_length)
+
+
+def even_grow_lengths(n_levels, total_grow_length, center_grow_length):
     """distributes (total_grow_length - center_grow_length) among the neighborhoods evenly
 
     n_levels is number of levels beyond the center-vert that get to grow

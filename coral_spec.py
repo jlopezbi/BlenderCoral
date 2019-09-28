@@ -9,10 +9,40 @@ import viz
 importlib.reload(Coral)
 
 
-def ico_seed():
+def ico_seed(diameter=10):
     bme = bmesh.new()
-    bmesh.ops.create_icosphere(bme, subdivisions=5, diameter=10)
+    bmesh.ops.create_icosphere(bme, subdivisions=5, diameter=diameter)
     return bme
+
+
+class GrowNeighborhoodTestCase(unittest.TestCase):
+    def test_on_grid(self):
+        grid = bmesh.new()
+        bmesh.ops.create_grid(grid, x_segments=10, y_segments=10, size=100)
+        grid.verts.ensure_lookup_table()
+        viz.add_bmesh(grid, "grid before grow")
+        vert = grid.verts[45]
+
+        levels = 3
+        neighbors = Coral.neighbor_levels(grid, vert, levels=levels)
+        grow_lengths = Coral.even_grow_lengths(
+            n_levels=levels, total_grow_length=600, center_grow_length=40
+        )
+        Coral.grow_neighborhood(neighbors, grow_lengths)
+        viz.add_bmesh(grid, "grid after grow")
+
+    def test_on_ico_sphere(self):
+        seed = ico_seed(diameter=100)
+        seed.verts.ensure_lookup_table()
+        vert = seed.verts[0]
+
+        levels = 10
+        neighbors = Coral.neighbor_levels(seed, vert, levels=levels)
+        grow_lengths = Coral.even_grow_lengths(
+            n_levels=levels, total_grow_length=1000, center_grow_length=10
+        )
+        Coral.grow_neighborhood(neighbors, grow_lengths)
+        viz.add_bmesh(seed, "ico after grow")
 
 
 class DisplaceVertTestCase(unittest.TestCase):
@@ -64,22 +94,26 @@ class DisplaceVertTestCase(unittest.TestCase):
 class GetNeighborsTestCase(unittest.TestCase):
     def setUp(self):
         self.seed = ico_seed()
-        self.coral = Coral.Coral(bme=self.seed)
+        self.seed.verts.ensure_lookup_table()
 
-    def _test(self):
+    # TODO: test what happens when levels extend beyond boundary of mesh
+
+    def test(self):
         """get a visual that neighbors look right and no dup spheres
         """
         viz.add_bmesh(self.seed)
         vert = self.seed.verts[0]
         # viz.add_sphere(vert.co, str(0), diam=1)
         levels = 20
-        neighbors = self.coral.neighbor_levels(vert, levels=levels)
+        neighbors = Coral.neighbor_levels(self.seed, vert, levels=levels)
 
         diam = 1.0
         step = (diam - 0.1) / levels
         for neighborhood in neighbors:
             for vert in neighborhood:
-                viz.add_sphere(vert.co, diam=diam)
+                # commented to make run faster
+                # viz.add_sphere(vert.co, diam=diam)
+                pass
             diam -= step
 
 
