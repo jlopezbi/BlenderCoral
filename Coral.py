@@ -66,11 +66,3 @@ def displace_vert(vert, length):
     """
     norm = vert.normal
     vert.co = vert.co + norm * length
-
-
-# Polyp. neighbor_levels
-#       . grow > upon receive nutrients
-#       . ensure_space
-#           (divide or merge w/ neighbor
-#       .send nutrients
-# hmm kiss
