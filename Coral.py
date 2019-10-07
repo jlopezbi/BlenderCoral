@@ -28,7 +28,7 @@ def neighbor_levels(bme, vert, levels):
 
 def grow_neighborhood(neighbors, grow_lengths):
     """grows verts by amount according to grow_lengths. for a vert belonging to neighborhood 1, for
-    example, grows that vert by grow_lengths[1] / number_verts_in_neighborhood_1
+    example, grows that vert by grow_lengths[1]
 
     Modifies positions of neighbors
     Args:
@@ -37,10 +37,22 @@ def grow_neighborhood(neighbors, grow_lengths):
     """
 
     for total_grow_length, neighborhood in zip(grow_lengths, neighbors):
-        num_neighbors = len(neighborhood)
-        grow_length = total_grow_length / num_neighbors
+        # num_neighbors = len(neighborhood)
+        grow_length = total_grow_length
         for vert in neighborhood:
             displace_vert(vert, grow_length)
+
+
+def falloff_neighborhood_grow_lengths(n_levels, last_grow_length, center_grow_length):
+    """linear falloff from total_grow_length, given to each
+    """
+    step_size = (center_grow_length - last_grow_length) / (n_levels - 1)
+    temp_length = center_grow_length
+    lengths = []
+    for _ in range(n_levels):
+        lengths.append(temp_length)
+        temp_length = temp_length - step_size
+    return lengths
 
 
 def even_grow_lengths(n_levels, total_grow_length, center_grow_length):

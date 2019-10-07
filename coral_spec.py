@@ -15,6 +15,15 @@ def ico_seed(diameter=10):
     return bme
 
 
+class GrowLengthsTestCase(unittest.TestCase):
+    def test_falloff_neighborhood_grow_lengths(self):
+        lengths = Coral.falloff_neighborhood_grow_lengths(
+            3, last_grow_length=1, center_grow_length=11
+        )
+        correct = [11, 6, 1]
+        self.assertEqual(lengths, correct)
+
+
 class GrowNeighborhoodTestCase(unittest.TestCase):
     def test_on_grid(self):
         grid = bmesh.new()
@@ -23,15 +32,19 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
         viz.add_bmesh(grid, "grid before grow")
         vert = grid.verts[45]
 
-        levels = 3
+        levels = 6
         neighbors = Coral.neighbor_levels(grid, vert, levels=levels)
         grow_lengths = Coral.even_grow_lengths(
             n_levels=levels, total_grow_length=600, center_grow_length=40
         )
+        grow_lengths = Coral.falloff_neighborhood_grow_lengths(
+            n_levels=levels, center_grow_length=40, last_grow_length=20
+        )
+
         Coral.grow_neighborhood(neighbors, grow_lengths)
         viz.add_bmesh(grid, "grid after grow")
 
-    def test_on_ico_sphere(self):
+    def _test_on_ico_sphere(self):
         seed = ico_seed(diameter=100)
         seed.verts.ensure_lookup_table()
         vert = seed.verts[0]
