@@ -30,6 +30,8 @@ def grow_neighborhood(neighbors, grow_lengths):
     """grows verts by amount according to grow_lengths. for a vert belonging to neighborhood 1, for
     example, grows that vert by grow_lengths[1]
 
+    NOTE: not dividing grow_lengths[i] by num_neighbors
+
     Modifies positions of neighbors
     Args:
         neighbors (list[list[bmesh.types.BMVert]]): list of lists of neihbbor verts

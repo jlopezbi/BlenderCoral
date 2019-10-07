@@ -34,9 +34,9 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
 
         levels = 6
         neighbors = Coral.neighbor_levels(grid, vert, levels=levels)
-        grow_lengths = Coral.even_grow_lengths(
-            n_levels=levels, total_grow_length=600, center_grow_length=40
-        )
+        # grow_lengths = Coral.even_grow_lengths(
+        # n_levels=levels, total_grow_length=600, center_grow_length=40
+        # )
         grow_lengths = Coral.falloff_neighborhood_grow_lengths(
             n_levels=levels, center_grow_length=40, last_grow_length=20
         )
@@ -44,15 +44,18 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
         Coral.grow_neighborhood(neighbors, grow_lengths)
         viz.add_bmesh(grid, "grid after grow")
 
-    def _test_on_ico_sphere(self):
+    def test_on_ico_sphere(self):
         seed = ico_seed(diameter=100)
         seed.verts.ensure_lookup_table()
         vert = seed.verts[0]
 
         levels = 10
         neighbors = Coral.neighbor_levels(seed, vert, levels=levels)
-        grow_lengths = Coral.even_grow_lengths(
-            n_levels=levels, total_grow_length=1000, center_grow_length=10
+        # grow_lengths = Coral.even_grow_lengths(
+        #    n_levels=levels, total_grow_length=1000, center_grow_length=10
+        # )
+        grow_lengths = Coral.falloff_neighborhood_grow_lengths(
+            n_levels=levels, center_grow_length=10, last_grow_length=1
         )
         Coral.grow_neighborhood(neighbors, grow_lengths)
         viz.add_bmesh(seed, "ico after grow")
