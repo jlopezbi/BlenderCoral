@@ -1,6 +1,20 @@
 import bmesh
 import viz
 
+LEVELS = 10
+MAX_GROW = 20
+MIN_GROW = 1
+
+
+def grow_site(bme, vert):
+    """this function modifies bme so that the vert and its neighbors grow
+    """
+    neighbors = neighbor_levels(bme, vert, levels=LEVELS)
+    grow_lengths = falloff_neighborhood_grow_lengths(
+        n_levels=LEVELS, center_grow_length=MAX_GROW, last_grow_length=MIN_GROW
+    )
+    grow_neighborhood(neighbors, grow_lengths)
+
 
 def neighbor_levels(bme, vert, levels):
     """outputs a list of lists of neighbors, ordered according to 'level' or

@@ -24,6 +24,21 @@ class GrowLengthsTestCase(unittest.TestCase):
         self.assertEqual(lengths, correct)
 
 
+class IcoSphereGrowSeedTestCase(unittest.TestCase):
+    def setUp(self):
+        self.seed = ico_seed(diameter=100)
+        self.seed.verts.ensure_lookup_table()
+
+    def test_two_grow_regions(self):
+        viz.add_bmesh(self.seed, "seed before grow")
+        vert_a = self.seed.verts[0]
+        vert_b = self.seed.verts[2500]
+
+        Coral.grow_site(self.seed, vert_a)
+        Coral.grow_site(self.seed, vert_b)
+        viz.add_bmesh(self.seed, "seed after two grow sites")
+
+
 class GrowNeighborhoodTestCase(unittest.TestCase):
     def test_on_grid(self):
         grid = bmesh.new()
@@ -34,9 +49,6 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
 
         levels = 6
         neighbors = Coral.neighbor_levels(grid, vert, levels=levels)
-        # grow_lengths = Coral.even_grow_lengths(
-        # n_levels=levels, total_grow_length=600, center_grow_length=40
-        # )
         grow_lengths = Coral.falloff_neighborhood_grow_lengths(
             n_levels=levels, center_grow_length=40, last_grow_length=20
         )
@@ -51,9 +63,6 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
 
         levels = 10
         neighbors = Coral.neighbor_levels(seed, vert, levels=levels)
-        # grow_lengths = Coral.even_grow_lengths(
-        #    n_levels=levels, total_grow_length=1000, center_grow_length=10
-        # )
         grow_lengths = Coral.falloff_neighborhood_grow_lengths(
             n_levels=levels, center_grow_length=10, last_grow_length=1
         )
