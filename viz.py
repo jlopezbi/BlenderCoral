@@ -5,6 +5,38 @@ import mathutils
 DEFAULT_BMESH_COLOR = (0.5, 0, 0.2)
 
 
+def add_box(lower_corner, upper_corner, name="Box"):
+    """
+    Args:
+        lower_corner (tuple or np array)
+        upper_corner (tuple or np array)
+    """
+    bme = bmesh.new()
+
+    v1 = bme.verts.new(lower_corner)
+    v2 = bme.verts.new((lower_corner[0], upper_corner[1], lower_corner[2]))
+    bme.edges.new((v1, v2))
+    v3 = bme.verts.new((upper_corner[0], upper_corner[1], lower_corner[2]))
+    bme.edges.new((v2, v3))
+    v4 = bme.verts.new((upper_corner[0], lower_corner[1], lower_corner[2]))
+    bme.edges.new((v3, v4))
+    bme.edges.new((v4, v1))
+    v5 = bme.verts.new((lower_corner[0], lower_corner[1], upper_corner[2]))
+    bme.edges.new((v1, v5))
+    v6 = bme.verts.new((lower_corner[0], upper_corner[1], upper_corner[2]))
+    bme.edges.new((v2, v6))
+    bme.edges.new((v5, v6))
+    v7 = bme.verts.new(upper_corner)
+    bme.edges.new((v3, v7))
+    bme.edges.new((v6, v7))
+    v8 = bme.verts.new((upper_corner[0], lower_corner[1], upper_corner[2]))
+    bme.edges.new((v4, v8))
+    bme.edges.new((v7, v8))
+    bme.edges.new((v8, v5))
+
+    add_bmesh(bme, objname=name)
+
+
 def add_sphere(pos, name="Sphere", diam=20, color=(0.5, 0.0, 0.5)):
     pos = mathutils.Vector(pos)
     bm = bmesh.new()
@@ -21,6 +53,7 @@ def add_sphere(pos, name="Sphere", diam=20, color=(0.5, 0.0, 0.5)):
     bpy.context.scene.objects.link(obj)
 
     return obj
+
 
 def add_bmesh(bm, objname="Object", color=DEFAULT_BMESH_COLOR, alpha=0):
     me = bpy.data.meshes.new("mesh")
