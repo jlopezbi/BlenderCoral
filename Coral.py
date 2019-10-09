@@ -2,7 +2,7 @@ import bmesh
 import viz
 
 LEVELS = 10
-MAX_GROW = 20
+MAX_GROW = 15
 MIN_GROW = 1
 
 

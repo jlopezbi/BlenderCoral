@@ -38,6 +38,20 @@ class IcoSphereGrowSeedTestCase(unittest.TestCase):
         Coral.grow_site(self.seed, vert_b)
         viz.add_bmesh(self.seed, "seed after two grow sites")
 
+    def test_three_grow_regions(self):
+        viz.add_bmesh(self.seed, "seed before grow")
+        vert_a = self.seed.verts[0]
+        vert_b = self.seed.verts[2500]
+        vert_c = self.seed.verts[2279]
+        viz.add_sphere(vert_a.co, "vert_a")
+        viz.add_sphere(vert_b.co, "vert_b")
+        viz.add_sphere(vert_c.co, "vert_c")
+
+        Coral.grow_site(self.seed, vert_a)
+        Coral.grow_site(self.seed, vert_b)
+        Coral.grow_site(self.seed, vert_c)
+        viz.add_bmesh(self.seed, "seed after three grow sites")
+
 
 class GrowNeighborhoodTestCase(unittest.TestCase):
     def test_on_grid(self):
