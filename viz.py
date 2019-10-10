@@ -76,3 +76,27 @@ def add_bmesh(bm, objname="Object", color=DEFAULT_BMESH_COLOR, alpha=0):
     bpy.context.scene.objects.link(obj)
 
     return obj
+
+
+def add_polyline(pnts, name="Polyline"):
+    bme = bmesh.new()
+    for i in range(len(pnts) - 1):
+        _add_line_to_bmesh(bme, pnts[i], pnts[i + 1])
+    add_bmesh(bme, objname=name)
+
+
+def add_line(a, b, name="Line"):
+    """
+    a = mathutils.Vector
+    b = mathutils.Vector
+    """
+
+    bme = bmesh.new()
+    _add_line_to_bmesh(bme, a, b)
+    add_bmesh(bme, objname=name)
+
+
+def _add_line_to_bmesh(bme, start, end):
+    v_start = bme.verts.new(start)
+    v_end = bme.verts.new(end)
+    bme.edges.new((v_start, v_end))

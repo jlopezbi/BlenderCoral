@@ -69,7 +69,8 @@ class ParticleSystem(object):
         move
         """
         for p in self.particles:
-            p.move(self.randomness_of_motion)
+            # NOTE: working here to get move working
+            p.move(magnitude=self.trend_speed, randomness=self.randomness_of_motion)
 
     def add_missing_particles_if_required(self):
         area = self.world.get_footprint_area()
@@ -124,22 +125,30 @@ class Particle(object):
     def __init__(self, position, radius):
         self.position = np.array(position)
         self.radius = radius
+        self.trace = []
 
     def set_position(self, new_position):
         self.position = np.array(new_position)
+        self.trace = []
 
     def move(self, magnitude, trend_direction=(0.0, 0.0, -1.0), randomness=0.5):
         """
         randomness is in range [0,1] for random brownian-like motion
         """
-        trend_velocity = np.array(trend_direction) * magnitude
+        trend_velocity = normalized(np.array(trend_direction))
         displacement_vec = (
-            trend_velocity * (1.0 - randomness) + self._get_random_vector(magnitude) * randomness
+            normalized(
+                trend_velocity * (1.0 - randomness)
+                + self._get_random_vector(magnitude=1.0) * randomness
+            )
+            * magnitude
         )
+        self.trace.append(self.position.copy())
         self.position += displacement_vec
 
     def show(self):
-        viz.add_sphere(self.position, diam=self.radius * 2)
+        viz.add_polyline(self.trace)
+        # viz.add_sphere(self.position, diam=self.radius * 2)
 
     def _get_random_vector_biased(self, speed):
         """
@@ -165,3 +174,10 @@ class Particle(object):
         # Z = magnitude * math.cos(inclination)
         Z = magnitude * math.cos(azimuth)
         return np.array([X, Y, Z])
+
+
+def normalized(v):
+    norm = np.linalg.norm(v)
+    if norm == 0:
+        return v
+    return v / norm
