@@ -126,9 +126,20 @@ class Particle(object):
         self.position = np.array(position)
         self.radius = radius
         self.trace = []
+        self.prev_position = position
+
+    def motion_ray_info(self):
+        """gets the 'motion ray' of the particle:
+        the point and vector representing the motion
+        that the particle just made. The vector points
+        from the prev_position to the position
+        """
+        # NOTE: working here to make this work
+        return (self.prev_position, self.position - self.prev_position)
 
     def set_position(self, new_position):
         self.position = np.array(new_position)
+        self.prev_position = new_position
         self.trace = []
 
     def move(self, magnitude, trend_direction=(0.0, 0.0, -1.0), randomness=0.5):
@@ -144,6 +155,7 @@ class Particle(object):
             * magnitude
         )
         self.trace.append(self.position.copy())
+        self.prev_position = self.position.copy()
         self.position += displacement_vec
 
     def show(self):

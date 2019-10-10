@@ -3,16 +3,11 @@ import unittest
 
 import bmesh
 import Coral
+import primitives as prims
 import vector_utils as vu
 import viz
 
 importlib.reload(Coral)
-
-
-def ico_seed(diameter=10):
-    bme = bmesh.new()
-    bmesh.ops.create_icosphere(bme, subdivisions=5, diameter=diameter)
-    return bme
 
 
 class GrowLengthsTestCase(unittest.TestCase):
@@ -26,7 +21,7 @@ class GrowLengthsTestCase(unittest.TestCase):
 
 class IcoSphereGrowSeedTestCase(unittest.TestCase):
     def setUp(self):
-        self.seed = ico_seed(diameter=100)
+        self.seed = prims.ico_seed(diameter=100)
         self.seed.verts.ensure_lookup_table()
 
     def test_two_grow_regions(self):
@@ -71,7 +66,7 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
         viz.add_bmesh(grid, "grid after grow")
 
     def test_on_ico_sphere(self):
-        seed = ico_seed(diameter=100)
+        seed = prims.ico_seed(diameter=100)
         seed.verts.ensure_lookup_table()
         vert = seed.verts[0]
 
@@ -132,7 +127,7 @@ class DisplaceVertTestCase(unittest.TestCase):
 
 class GetNeighborsTestCase(unittest.TestCase):
     def setUp(self):
-        self.seed = ico_seed()
+        self.seed = prims.ico_seed()
         self.seed.verts.ensure_lookup_table()
 
     # TODO: test what happens when levels extend beyond boundary of mesh

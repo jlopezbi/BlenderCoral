@@ -1,9 +1,18 @@
 import bmesh
+import mathutils
 import viz
 
 LEVELS = 10
 MAX_GROW = 15
 MIN_GROW = 1
+
+
+class Coral(object):
+    def __init__(self, bme):
+        self.bme = bme
+
+    def feed_off_of(self, particle_system):
+        tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
 
 
 def grow_site(bme, vert):
