@@ -1,3 +1,5 @@
+import numpy as np
+
 import bmesh
 import mathutils
 import viz
@@ -11,8 +13,16 @@ class Coral(object):
     def __init__(self, bme):
         self.bme = bme
 
-    def feed_off_of(self, particle_system):
+    def feed_off_of(self, particle_system, threshold):
+        """
+        Args:
+            particle_system
+        """
         tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
+        for particle in particle_system.particles:
+            # NOTE: working here to make this work
+            origin, vector = particle.motion_ray_info(threshold=particle_system.trend_speed / 10.0)
+            tree.ray_cast(origin, vector, np.linalg.norm(vector))
 
 
 def grow_site(bme, vert):

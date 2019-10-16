@@ -3,8 +3,6 @@ import random
 
 import numpy as np
 
-import viz
-
 # NOTE: working here to set up particles system
 
 
@@ -123,22 +121,27 @@ class ParticleSystem(object):
 
 class Particle(object):
     def __init__(self, position, radius):
-        self.position = np.array(position)
+        self.position = position
         self.radius = radius
         self.trace = []
         self.prev_position = position
 
-    def motion_ray_info(self):
+    def motion_ray_info(self, threshold):
         """gets the 'motion ray' of the particle:
         the point and vector representing the motion
         that the particle just made. The vector points
         from the prev_position to the position
+
+        Args:
+            threshold (float): minimum distance below which particle is judged as not moving
         """
-        # NOTE: working here to make this work
-        return (self.prev_position, self.position - self.prev_position)
+        vector = self.position - self.prev_position
+        if np.linalg.norm(vector) < threshold:
+            return {"origin": None, "ray": None}
+        return {"origin": self.prev_position, "ray": vector}
 
     def set_position(self, new_position):
-        self.position = np.array(new_position)
+        self.position = new_position
         self.prev_position = new_position
         self.trace = []
 
@@ -158,8 +161,9 @@ class Particle(object):
         self.prev_position = self.position.copy()
         self.position += displacement_vec
 
-    def show(self):
-        viz.add_polyline(self.trace)
+    def show(self, add_polyline_func):
+        # viz.add_polyline(self.trace)
+        add_polyline_func(self.trace)
         # viz.add_sphere(self.position, diam=self.radius * 2)
 
     def _get_random_vector_biased(self, speed):

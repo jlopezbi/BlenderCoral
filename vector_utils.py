@@ -1,3 +1,5 @@
+import numpy as np
+
 import mathutils
 
 UNIT_X = mathutils.Vector((1.0, 0.0, 0.0))
@@ -11,7 +13,7 @@ def nearly_same_vecs(vec_a, vec_b, threshold=0.001):
     vec_b = mathutils.Vector
     """
     diff = vec_a - vec_b
-    if diff.length <= threshold:
+    if np.linalg.norm(diff) <= threshold:
         return True
 
     return False
