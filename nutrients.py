@@ -57,9 +57,9 @@ class ParticleSystem(object):
             position = self.world.get_a_spawn_location()
             self.particles.append(Particle(position, self.radius))
 
-    def show_particles(self):
+    def show_particles(self, add_polyline_func):
         for p in self.particles:
-            p.show()
+            p.show(add_polyline_func)
 
     def move_particles(self):
         """
@@ -162,6 +162,11 @@ class Particle(object):
         self.position += displacement_vec
 
     def show(self, add_polyline_func):
+        """
+        Args:
+            add_polyline_func (function): injecting visualization function to avoid having to
+            import blender library; allows tests to run without blender dependency
+        """
         # viz.add_polyline(self.trace)
         add_polyline_func(self.trace)
         # viz.add_sphere(self.position, diam=self.radius * 2)

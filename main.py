@@ -2,6 +2,7 @@ import importlib
 
 import Coral
 import nutrients
+import viz
 import world
 
 importlib.reload(Coral)
@@ -35,7 +36,7 @@ for i in range(steps):
     # box.resize_to_fit(
     #    coral.bbox_lower, coral.bbox_upper, padding=particle_system.radius * box.padding_multiplier
     # )
-particle_system.show_particles()
+particle_system.show_particles(viz.add_polyline)
 
 # weed.show()
 box.show()
