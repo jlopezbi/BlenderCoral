@@ -9,20 +9,36 @@ MAX_GROW = 15
 MIN_GROW = 1
 
 
+def interact(coral, particle_system):
+    coral.prepare_for_interaction()
+    for particle in particle_system.particles:
+        did_collide = coral.interact_with(particle)
+        if did_collide == True:
+            particle_system.re_spawn_particle(particle)
+
+
 class Coral(object):
     def __init__(self, bme):
         self.bme = bme
+        self.tree = None
 
-    def feed_off_of(self, particle_system, threshold):
+    def prepare_for_interaction(self):
+        self.tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
+
+    def interact_with(self, particle):
         """
         Args:
             particle_system
         """
-        tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
-        for particle in particle_system.particles:
-            # NOTE: working here to make this work
-            origin, vector = particle.motion_ray_info(threshold=particle_system.trend_speed / 10.0)
-            tree.ray_cast(origin, vector, np.linalg.norm(vector))
+        # NOTE: working here to make this work
+        out = particle.motion_ray_info()
+        origin = out["origin"]
+        vector = out["ray"]
+
+        location, normal, index, distance = self.tree.ray_cast(
+            origin, vector, np.linalg.norm(vector)
+        )
+        return location
 
 
 def grow_site(bme, vert):

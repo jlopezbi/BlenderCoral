@@ -3,7 +3,7 @@ import random
 
 import numpy as np
 
-# NOTE: working here to set up particles system
+# TODO: remove radius altogether; not used at moment
 
 
 class ParticleSystem(object):
@@ -44,7 +44,7 @@ class ParticleSystem(object):
             radius = self.radius
         for i in range(n):
             position = self.world.get_a_spawn_location()
-            self.particles.append(Particle(position, radius))
+            self.particles.append(Particle(position, radius, motion_thresh=self.trend_speed / 10))
 
     def num_particles(self):
         return len(self.particles)
@@ -55,7 +55,9 @@ class ParticleSystem(object):
         # i.e. a ton of particles colliding in a small time frame. How to space it out?
         for i in range(self.num_particles()):
             position = self.world.get_a_spawn_location()
-            self.particles.append(Particle(position, self.radius))
+            self.particles.append(
+                Particle(position, self.radius, motion_thresh=self.trend_speed / 10.0)
+            )
 
     def show_particles(self, add_polyline_func):
         for p in self.particles:
@@ -113,30 +115,33 @@ class ParticleSystem(object):
 
     def show_case_particle_motion(self, steps=10):
         init_pos = (0.0, 0.0, 0.0)
-        p1 = Particle(init_pos, self.radius)
+        p1 = Particle(init_pos, self.radius, motion_thresh=0.001)
         for i in range(steps):
             p1.move(self.trend_speed, self.trend_direction, self.randomness_of_motion)
             # p1.show()
 
 
 class Particle(object):
-    def __init__(self, position, radius):
+    def __init__(self, position, radius, motion_thresh):
+        """
+            threshold (float): minimum distance below which particle is judged as not moving
+            """
         self.position = np.array(position)
         self.radius = radius
         self.trace = []
         self.prev_position = position
+        self.motion_thresh = motion_thresh
 
-    def motion_ray_info(self, threshold):
+    def motion_ray_info(self):
         """gets the 'motion ray' of the particle:
         the point and vector representing the motion
         that the particle just made. The vector points
         from the prev_position to the position
 
         Args:
-            threshold (float): minimum distance below which particle is judged as not moving
         """
         vector = self.position - self.prev_position
-        if np.linalg.norm(vector) < threshold:
+        if np.linalg.norm(vector) < self.motion_thresh:
             return {"origin": None, "ray": None}
         return {"origin": self.prev_position, "ray": vector}
 
@@ -145,7 +150,7 @@ class Particle(object):
         self.prev_position = new_position
         self.trace = []
 
-    def move(self, magnitude, trend_direction=(0.0, 0.0, -1.0), randomness=0.5):
+    def move(self, magnitude, trend_direction=np.array((0.0, 0.0, -1.0)), randomness=0.5):
         """
         randomness is in range [0,1] for random brownian-like motion
         """

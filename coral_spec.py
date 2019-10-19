@@ -1,13 +1,34 @@
 import importlib
 import unittest
 
+import numpy as np
+
 import bmesh
 import Coral
+import nutrients
 import primitives as prims
 import vector_utils as vu
 import viz
 
 importlib.reload(Coral)
+
+
+class FeedOffOfTestCase(unittest.TestCase):
+    def setUp(self):
+        self.coral = Coral.Coral(prims.ico_seed(radius=50))
+        self.particle = nutrients.Particle(
+            np.array((0.0, 0.0, 60.0)), radius=None, motion_thresh=0.001
+        )
+
+    def test_feed_off_of_base_case(self):
+        # TODO: work here to test
+        viz.add_sphere(self.particle.position, "particle init pos")
+        self.particle.move(magnitude=30.0, randomness=0.0)
+        viz.add_sphere(self.particle.position, "particle final pos")
+        self.particle.show(viz.add_polyline)
+        self.coral.prepare_for_interaction()
+        location = self.coral.interact_with(self.particle)
+        viz.add_sphere(location, name="collision")
 
 
 class GrowLengthsTestCase(unittest.TestCase):
@@ -21,7 +42,7 @@ class GrowLengthsTestCase(unittest.TestCase):
 
 class IcoSphereGrowSeedTestCase(unittest.TestCase):
     def setUp(self):
-        self.seed = prims.ico_seed(diameter=100)
+        self.seed = prims.ico_seed(radius=50)
         self.seed.verts.ensure_lookup_table()
 
     def test_two_grow_regions(self):
@@ -66,7 +87,7 @@ class GrowNeighborhoodTestCase(unittest.TestCase):
         viz.add_bmesh(grid, "grid after grow")
 
     def test_on_ico_sphere(self):
-        seed = prims.ico_seed(diameter=100)
+        seed = prims.ico_seed(radius=100)
         seed.verts.ensure_lookup_table()
         vert = seed.verts[0]
 
