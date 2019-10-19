@@ -116,12 +116,12 @@ class ParticleSystem(object):
         p1 = Particle(init_pos, self.radius)
         for i in range(steps):
             p1.move(self.trend_speed, self.trend_direction, self.randomness_of_motion)
-            p1.show()
+            # p1.show()
 
 
 class Particle(object):
     def __init__(self, position, radius):
-        self.position = position
+        self.position = np.array(position)
         self.radius = radius
         self.trace = []
         self.prev_position = position
@@ -141,7 +141,7 @@ class Particle(object):
         return {"origin": self.prev_position, "ray": vector}
 
     def set_position(self, new_position):
-        self.position = new_position
+        self.position = np.array(new_position)
         self.prev_position = new_position
         self.trace = []
 

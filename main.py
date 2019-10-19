@@ -28,7 +28,7 @@ particle_system.add_n_particles_at_spawn_loc(n=num_particles, radius=0.01)
 
 
 """ run """
-steps = 5
+steps = 50
 for i in range(steps):
     particle_system.move_particles()
     particle_system.re_spawn_escaped_particles()
