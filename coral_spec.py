@@ -11,6 +11,7 @@ import vector_utils as vu
 import viz
 
 importlib.reload(Coral)
+importlib.reload(nutrients)
 
 
 class FeedOffOfTestCase(unittest.TestCase):
@@ -21,14 +22,14 @@ class FeedOffOfTestCase(unittest.TestCase):
         )
 
     def test_feed_off_of_base_case(self):
-        # TODO: work here to test
-        viz.add_sphere(self.particle.position, "particle init pos")
+        # viz.add_sphere(self.particle.position, "particle init pos")
         self.particle.move(magnitude=30.0, randomness=0.0)
-        viz.add_sphere(self.particle.position, "particle final pos")
+        # viz.add_sphere(self.particle.position, "particle final pos")
         self.particle.show(viz.add_polyline)
         self.coral.prepare_for_interaction()
         location = self.coral.interact_with(self.particle)
         viz.add_sphere(location, name="collision")
+        viz.add_bmesh(self.coral.bme, "coral after collision")
 
 
 class GrowLengthsTestCase(unittest.TestCase):

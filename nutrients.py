@@ -128,7 +128,7 @@ class Particle(object):
             """
         self.position = np.array(position)
         self.radius = radius
-        self.trace = []
+        self.trace = [position]
         self.prev_position = position
         self.motion_thresh = motion_thresh
 
@@ -162,9 +162,9 @@ class Particle(object):
             )
             * magnitude
         )
-        self.trace.append(self.position.copy())
         self.prev_position = self.position.copy()
         self.position += displacement_vec
+        self.trace.append(self.position.copy())
 
     def show(self, add_polyline_func):
         """

@@ -5,16 +5,8 @@ import mathutils
 import viz
 
 LEVELS = 10
-MAX_GROW = 15
-MIN_GROW = 1
-
-
-def interact(coral, particle_system):
-    coral.prepare_for_interaction()
-    for particle in particle_system.particles:
-        did_collide = coral.interact_with(particle)
-        if did_collide == True:
-            particle_system.re_spawn_particle(particle)
+MAX_GROW = 0.07
+MIN_GROW = 0.001
 
 
 class Coral(object):
@@ -23,6 +15,7 @@ class Coral(object):
         self.tree = None
 
     def prepare_for_interaction(self):
+        self.bme.faces.ensure_lookup_table()
         self.tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
 
     def interact_with(self, particle):
@@ -35,10 +28,24 @@ class Coral(object):
         origin = out["origin"]
         vector = out["ray"]
 
-        location, normal, index, distance = self.tree.ray_cast(
-            origin, vector, np.linalg.norm(vector)
-        )
-        return location
+        # particle did move
+        if vector is not None:
+            location, normal, face_index, distance = self.tree.ray_cast(
+                origin, vector, np.linalg.norm(vector)
+            )
+            # particle did collide with coral
+            if location is not None:
+                # is this a face face_index?
+                vert = self.nearest_vert(location, face_index)
+                grow_site(self.bme, vert)
+                return True
+
+        return False
+
+    def nearest_vert(self, location, face_index):
+        face = self.bme.faces[face_index]
+        verts = face.verts
+        return min(verts, key=lambda vert: (vert.co - location).length)
 
 
 def grow_site(bme, vert):
