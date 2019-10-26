@@ -10,7 +10,6 @@ importlib.reload(Coral)
 importlib.reload(nutrients)
 importlib.reload(world)
 
-"""set up"""
 side = 2.0
 height = 3.0
 front = (-side / 2, -side / 2, 0.0)
@@ -28,6 +27,7 @@ particle_system.add_n_particles_at_spawn_loc(n=num_particles, radius=0.01)
 # particle_system.show_particles()
 
 coral = Coral.Coral(prims.ico_seed(radius=0.4))
+long_thresh = 0.06
 
 
 def interact(coral, particle_system):
@@ -38,12 +38,12 @@ def interact(coral, particle_system):
             particle_system.re_spawn_particle(particle)
 
 
-""" run """
 steps = 200
 for i in range(steps):
     particle_system.move_particles()
     particle_system.re_spawn_escaped_particles()
     interact(coral, particle_system)
+    coral.divide_long_edges(long_thresh)
     # box.resize_to_fit(
     #    coral.bbox_lower, coral.bbox_upper, padding=particle_system.radius * box.padding_multiplier
     # )

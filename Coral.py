@@ -2,7 +2,8 @@ import numpy as np
 
 import bmesh
 import mathutils
-import viz
+
+# import viz
 
 LEVELS = 10
 MAX_GROW = 0.07
@@ -18,12 +19,38 @@ class Coral(object):
         self.bme.faces.ensure_lookup_table()
         self.tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
 
+    def collapse_short_edges(self, threshold_length):
+        pass
+
+    def divide_long_edges(self, threshold_length):
+        """subdivide each edge of the coral that is above the threshold length
+        """
+        # divide long edges
+        long_edges = []
+        for edge in self.bme.edges:
+            if edge.calc_length() > threshold_length:
+                long_edges.append(edge)
+        # something werid happening that seemed like inifinte loop,
+        # so trying breaking operations out into two steps
+
+        for edge in long_edges:
+            vert = edge.verts[0]
+            # splits at the midpoint of the edge
+            bmesh.utils.edge_split(edge, vert, 0.5)
+
+        self._triangulate()
+
+    def _triangulate(self):
+        bmesh.ops.triangulate(self.bme, faces=self.bme.faces)
+
     def interact_with(self, particle):
-        """
+        """check if the particle collided; if it did grow the nearest vert to the collision
+
         Args:
-            particle_system
+            particle
+        Returns:
+            boolean: True if the particle collided, false otherwise
         """
-        # NOTE: working here to make this work
         out = particle.motion_ray_info()
         origin = out["origin"]
         vector = out["ray"]
@@ -36,13 +63,13 @@ class Coral(object):
             # particle did collide with coral
             if location is not None:
                 # is this a face face_index?
-                vert = self.nearest_vert(location, face_index)
+                vert = self._nearest_vert(location, face_index)
                 grow_site(self.bme, vert)
                 return True
 
         return False
 
-    def nearest_vert(self, location, face_index):
+    def _nearest_vert(self, location, face_index):
         face = self.bme.faces[face_index]
         verts = face.verts
         return min(verts, key=lambda vert: (vert.co - location).length)
