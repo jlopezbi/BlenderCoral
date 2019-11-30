@@ -14,6 +14,32 @@ importlib.reload(Coral)
 importlib.reload(nutrients)
 
 
+class DivideLongEdgesTestCase(unittest.TestCase):
+    def setUp(self):
+        self.coral = Coral.Coral(prims.ico_seed(radius=50))
+
+    def test_divide_long_edges_cube(self):
+        coral_cube = Coral.Coral(prims.cube(side=50))
+        viz.add_bmesh(coral_cube.bme, "cube before divide")
+        before_num_edges = len(coral_cube.bme.edges)
+        before_num_verts = len(coral_cube.bme.verts)
+        coral_cube.divide_long_edges(threshold_length=0.01)
+        after_num_verts = len(coral_cube.bme.verts)
+        viz.add_bmesh(coral_cube.bme, "cube after divide")
+
+        self.assertEqual(before_num_verts + before_num_edges, after_num_verts)
+
+    def test_divide_long_edges(self):
+        viz.add_bmesh(self.coral.bme, "before divide")
+        before_num_edges = len(self.coral.bme.edges)
+        before_num_verts = len(self.coral.bme.verts)
+        self.coral.divide_long_edges(threshold_length=0.01)
+        viz.add_bmesh(self.coral.bme, "after divide")
+        after_num_verts = len(self.coral.bme.verts)
+
+        self.assertEqual(before_num_verts + before_num_edges, after_num_verts)
+
+
 class FeedOffOfTestCase(unittest.TestCase):
     def setUp(self):
         self.coral = Coral.Coral(prims.ico_seed(radius=50))
@@ -28,7 +54,8 @@ class FeedOffOfTestCase(unittest.TestCase):
         self.particle.show(viz.add_polyline)
         self.coral.prepare_for_interaction()
         location = self.coral.interact_with(self.particle)
-        viz.add_sphere(location, name="collision")
+        self.assertTrue(location)
+
         viz.add_bmesh(self.coral.bme, "coral after collision")
 
 

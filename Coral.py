@@ -46,6 +46,8 @@ class Coral(object):
     def interact_with(self, particle):
         """check if the particle collided; if it did grow the nearest vert to the collision
 
+        has importantside effect of growing the site that got 'fed'
+
         Args:
             particle
         Returns:

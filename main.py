@@ -38,12 +38,12 @@ def interact(coral, particle_system):
             particle_system.re_spawn_particle(particle)
 
 
-steps = 200
+steps = 100
 for i in range(steps):
     particle_system.move_particles()
     particle_system.re_spawn_escaped_particles()
     interact(coral, particle_system)
-    coral.divide_long_edges(long_thresh)
+    # coral.divide_long_edges(long_thresh)
     # box.resize_to_fit(
     #    coral.bbox_lower, coral.bbox_upper, padding=particle_system.radius * box.padding_multiplier
     # )
