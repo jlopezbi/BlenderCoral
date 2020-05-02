@@ -28,6 +28,7 @@ particle_system.add_n_particles_at_spawn_loc(n=num_particles, radius=0.01)
 
 coral = Coral.Coral(prims.ico_seed(radius=0.4))
 long_thresh = 0.06
+short_thresh = 0.001
 
 
 def interact(coral, particle_system):
@@ -38,12 +39,14 @@ def interact(coral, particle_system):
             particle_system.re_spawn_particle(particle)
 
 
-steps = 100
+steps = 50
 for i in range(steps):
+    print("iteration: ", i)
     particle_system.move_particles()
     particle_system.re_spawn_escaped_particles()
     interact(coral, particle_system)
-    # coral.divide_long_edges(long_thresh)
+    coral.divide_long_edges(long_thresh)
+    coral.collapse_short_edges(short_thresh)
     # box.resize_to_fit(
     #    coral.bbox_lower, coral.bbox_upper, padding=particle_system.radius * box.padding_multiplier
     # )

@@ -20,7 +20,7 @@ class Coral(object):
         self.tree = mathutils.bvhtree.BVHTree.FromBMesh(self.bme, epsilon=0.0)
 
     def collapse_short_edges(self, threshold_length):
-        pass
+        bmesh.ops.dissolve_degenerate(self.bme, dist=threshold_length, edges=self.bme.edges)
 
     def divide_long_edges(self, threshold_length):
         """subdivide each edge of the coral that is above the threshold length
